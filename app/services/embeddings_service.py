@@ -1,6 +1,6 @@
 """Embeddings Service (Google GenAI v1 – FINAL FIX)"""
 from typing import List
-from google import genai
+import google.generativeai as genai
 from app.config.settings import settings
 
 class EmbeddingsService:
