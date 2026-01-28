@@ -1,38 +1,32 @@
-"""Embeddings Service"""
-import google.generativeai as genai
+"""Embeddings Service (Google GenAI v1 – FINAL FIX)"""
 from typing import List
+from google import genai
 from app.config.settings import settings
 
 class EmbeddingsService:
     def __init__(self):
-        genai.configure(api_key=settings.GOOGLE_API_KEY)
-        self.model = "models/embedding-001"
-    
+        self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
+        self.model = "text-embedding-004"
+
     def generate_embedding(self, text: str) -> List[float]:
         try:
-            result = genai.embed_content(
+            response = self.client.models.embed_content(
                 model=self.model,
-                content=text,
-                task_type="retrieval_document"
+                contents=text   # ✅ NOTE: contents (plural)
             )
-            return result['embedding']
+            return response["embedding"]
         except Exception as e:
             raise Exception(f"Embedding error: {str(e)}")
-    
+
     def generate_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
-        embeddings = []
-        for text in texts:
-            embedding = self.generate_embedding(text)
-            embeddings.append(embedding)
-        return embeddings
-    
+        return [self.generate_embedding(text) for text in texts]
+
     def generate_query_embedding(self, query: str) -> List[float]:
         try:
-            result = genai.embed_content(
+            response = self.client.models.embed_content(
                 model=self.model,
-                content=query,
-                task_type="retrieval_query"
+                contents=query  # ✅ same here
             )
-            return result['embedding']
+            return response["embedding"]
         except Exception as e:
             raise Exception(f"Query embedding error: {str(e)}")
